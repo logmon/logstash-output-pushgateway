@@ -23,10 +23,10 @@ class LogStash::Outputs::Pushgateway < LogStash::Outputs::Base
     if value = event.get(@key)
       attr_str = @attrs.sort.map do |attr|
         v = event.get(attr)
-        v.nil? ? nil : sprintf('%s="%s"', attr, v)
+        v.nil? ? nil : sprintf('%s="%s"', attr.split('.').last, v)
       end.compact.join(',')
 
-      metric = sprintf("%s{%s}", @key, attr_str)
+      metric = sprintf("%s{%s}", @key.split('.').last, attr_str)
 
       body = sprintf("%s %s\n", metric, value)
 
