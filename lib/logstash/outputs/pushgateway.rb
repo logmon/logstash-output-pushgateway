@@ -21,12 +21,14 @@ class LogStash::Outputs::Pushgateway < LogStash::Outputs::Base
   public
   def receive(event)
     if value = event.get(@key)
-      attr_str = @attrs.map do |attr|
+      attr_str = @attrs.sort.map do |attr|
         v = event.get(attr)
         v.nil? ? nil : sprintf('%s="%s"', attr, v)
       end.compact.join(',')
 
-      body = sprintf("%s{%s} %s\n", @key, attr_str, value)
+      metric = sprintf("%s{%s}", @key, attr_str)
+
+      body = sprintf("%s %s\n", metric, value)
 
       @http.post "#{@path}/#{@job}", body
       body

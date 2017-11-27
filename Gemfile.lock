@@ -130,7 +130,7 @@ PLATFORMS
 DEPENDENCIES
   logstash-devutils (~> 1.3)
   logstash-output-pushgateway!
-  pry-nav
+  pry-nav (~> 0.2)
 
 BUNDLED WITH
    1.16.0
