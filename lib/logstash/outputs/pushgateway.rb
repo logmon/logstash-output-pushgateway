@@ -8,10 +8,10 @@ class LogStash::Outputs::Pushgateway < LogStash::Outputs::Base
   config_name "pushgateway"
   config :host , validate: :string, default: 'pushgateway'
   config :port , validate: :number, default: 9091
-  config :path , validate: :string, default: '/metrics/job'
   config :job  , validate: :string, default: 'logevent'
-  config :attrs, validate: :array , default: ['instance']
+  config :instance, validate: :string, default: 'docker.instance'
   config :key  , validate: :string
+  config :attrs, validate: :array , default: []
 
   public
   def register
@@ -30,7 +30,12 @@ class LogStash::Outputs::Pushgateway < LogStash::Outputs::Base
 
       body = sprintf("%s %s\n", metric, value)
 
-      @http.post "#{@path}/#{@job}", body
+      if instance = event.get(@instance)
+        path = "/metrics/job/#{@job}/instance/#{instance}"
+      else
+        path = "/metrics/job/#{@job}" # no instance
+      end
+      @http.post path, body
       body
     else
       "Event received"
